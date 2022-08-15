@@ -1,0 +1,25 @@
+[project]
+name = ""
+version = ""
+description = ""
+authors = [
+    {name = "“midoriyaShonen441”", email = "khunnatta@gmail.com"},
+]
+dependencies = [
+    "numpy>=1.23.2",
+    "pyserial>=3.5",
+    "matplotlib>=3.5.3",
+    "pyinstaller>=4.5.1",
+]
+requires-python = ">=3.8"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-pep517>=1.0.0"]
+build-backend = "pdm.pep517.api"
+
+[tool]
+[tool.pdm]
+[tool.pdm.scripts]
+start = "python Final-4.py"
+execute = "pyinstaller helloWorld.py"

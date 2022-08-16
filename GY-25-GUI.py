@@ -7,6 +7,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from serial import Serial
+import sys
+import glob
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 matplotlib.use('TkAgg')
@@ -130,10 +132,36 @@ def animate(i, xs, Rolls):
     plt.ylabel('Degree')
     cnt +=0.5
 
+def serial_ports():
+    """ Lists serial port names
+
+        :raises EnvironmentError:
+            On unsupported or unknown platforms
+        :returns:
+            A list of the serial ports available on the system
+    """
+    if sys.platform.startswith('win'):
+        ports = ['COM%s' % (i + 1) for i in range(256)]
+    elif sys.platform.startswith('linux') or sys.platform.startswith('cygwin'):
+        # this excludes your current terminal "/dev/tty"
+        ports = glob.glob('/dev/tty[A-Za-z]*')
+    elif sys.platform.startswith('darwin'):
+        ports = glob.glob('/dev/tty.*')
+    else:
+        raise EnvironmentError('Unsupported platform')
+
+    result = []
+    for port in ports:
+        try:
+            s = serial.Serial(port)
+            s.close()
+            result.append(port)
+        except (OSError, serial.SerialException):
+            pass
+    return result
+
 # Set initial Arduino port
-# ArduinoPort = Serial('COM4',9600,timeout=30)
-ArduinoPort = Serial('/dev/tty',9600,timeout=30)
-# ArduinoPort = "Test"
+ArduinoPort = Serial(serial_ports()[0],9600,timeout=30)
 ArduinoPort.flushInput()
 buffer = b''
 
@@ -200,7 +228,7 @@ if __name__ == "__main__":
     RollMax = tk.Entry(width=5, bd=5, textvariable=RollMax_Var)
     RollMax.place(anchor='w', relx=0.60, rely=0.40)
 
-    RollSet = tk.Button(text='Set', command=SetRoll).pack()
+    # RollSet = tk.Button(text='TEST', command=SetRoll).pack()
 
     XSlider=tk.Scale(orient=tk.HORIZONTAL,
                      length=350,

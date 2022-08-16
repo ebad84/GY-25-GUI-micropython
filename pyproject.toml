@@ -10,6 +10,7 @@ dependencies = [
     "pyserial>=3.5",
     "matplotlib>=3.5.3",
     "pyinstaller>=4.5.1",
+    "pandas>=1.4.3",
 ]
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -21,5 +22,5 @@ build-backend = "pdm.pep517.api"
 [tool]
 [tool.pdm]
 [tool.pdm.scripts]
-start = "python GY-25-GUI.py"
+start = "python GY-25-GUI-2.py"
 execute = "pyinstaller helloWorld.py"

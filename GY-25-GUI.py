@@ -131,7 +131,8 @@ def animate(i, xs, Rolls):
     cnt +=0.5
 
 # Set initial Arduino port
-ArduinoPort = Serial('COM4',9600,timeout=30)
+# ArduinoPort = Serial('COM4',9600,timeout=30)
+ArduinoPort = Serial('/dev/tty',9600,timeout=30)
 # ArduinoPort = "Test"
 ArduinoPort.flushInput()
 buffer = b''

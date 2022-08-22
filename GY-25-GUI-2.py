@@ -499,9 +499,11 @@ plane = np.array([[a, -a, a, -a],
 ########### Start GUI #############
 
 ### set arduino port ###
+#############################################################################
 com_port = set_port(1)
 arduino_port = Serial(str(com_port), 9600, timeout=100)
 time.sleep(1)
+#############################################################################
 
 ### start threading ###
 t1 = threading.Thread(target=plot) #start plot loop

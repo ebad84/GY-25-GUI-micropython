@@ -14,6 +14,46 @@ import tkinter.font as tkFont
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
 import re
+
+
+
+
+
+import struct
+import time
+import serial
+
+class GY25:
+    def __init__(self, port, baudrate=115200):  # دقت کن بعضی ماژول‌ها 9600 یا 115200 دارن
+        if type(port) == Serial:
+            self.ser = port
+        else:
+            self.ser = serial.Serial(port, baudrate, timeout=0.1)
+        time.sleep(2)
+        # فعال‌سازی continuous output
+        self.ser.write(b'\xA5\x54')
+        time.sleep(0.1)
+        self.ser.write(b'\xA5\x51')
+
+    def read_angles(self):
+        # بخون 8 بایت
+        self.ser.write(b'\xA5\x51')
+        buf = self.ser.read(8)
+        if not buf or len(buf) < 8:
+            return None
+        if buf[0] != 0xAA or buf[7] != 0x55:
+            return None
+        yaw   = struct.unpack(">h", buf[1:3])[0] / 100.0
+        pitch = struct.unpack(">h", buf[3:5])[0] / 100.0
+        roll  = struct.unpack(">h", buf[5:7])[0] / 100.0
+        print((roll, pitch, yaw))
+        return (roll, pitch, yaw)
+
+
+
+
+
+
 ##########  button function #############
 def start():
     global start_status, arduino_port, com_port, roll, pitch, yaw, count
@@ -118,7 +158,6 @@ def arduino_reset():
 
 def mode_change():
     label = mode_label.cget('text')
-    print(type(label))
     if label == 'Manual Mode':
         arduino_port.write(b'2')
         mode_label['text'] = '2'
@@ -305,25 +344,40 @@ def set_port(set):
     return ports_list
 
 ### read from arduino ###
+# def read_arduino():
+#     global roll, pitch, yaw, num, mode
+#     while True:
+#         time.sleep(0.1)
+#         if start_status == True:
+#             while arduino_port.inWaiting():
+#                 tmp = arduino_port.read_until(b'\n')
+#                 try:
+#                     num = [float(i) for i in tmp.decode('ascii').split()]
+#                     tmp = b''
+#                     if print_text_status == True:
+#                         print(num)
+#                     roll = round(-(roll_origin - num[0]), 2)
+#                     pitch = round(-(pitch_origin - num[1]), 2)
+#                     yaw = round(-(yaw_origin - num[2]), 2)
+#                     mode = num[3]
+
+#                 except:
+#                     pass
+#         if stop_threads:
+#             break
+
+### read from arduino ###
 def read_arduino():
     global roll, pitch, yaw, num, mode
     while True:
-        time.sleep(0.1)
-        if start_status == True:
-            while arduino_port.inWaiting():
-                tmp = arduino_port.read_until(b'\n')
-                try:
-                    num = [float(i) for i in tmp.decode('ascii').split()]
-                    tmp = b''
-                    if print_text_status == True:
-                        print(num)
-                    roll = round(-(roll_origin - num[0]), 2)
-                    pitch = round(-(pitch_origin - num[1]), 2)
-                    yaw = round(-(yaw_origin - num[2]), 2)
-                    mode = num[3]
-
-                except:
-                    pass
+        time.sleep(0.05)
+        if start_status:
+            data = gy25.read_angles()
+            if data:
+                roll, pitch, yaw = data
+                num = [roll, pitch, yaw, 1]   # mode رو ثابت 1 گذاشتم، چون GY25 چیزی درباره mode نداره
+                if print_text_status:
+                    print(num, "hohahaha")
         if stop_threads:
             break
 
@@ -503,7 +557,8 @@ plane = np.array([[a, -a, a, -a],
 ### set arduino port ###
 #############################################################################
 com_port = set_port(1)
-arduino_port = Serial(str(com_port), 9600, timeout=100)
+arduino_port = Serial(str(com_port), 115200, timeout=100)
+gy25 = GY25(arduino_port, 115200)
 time.sleep(1)
 #############################################################################
 

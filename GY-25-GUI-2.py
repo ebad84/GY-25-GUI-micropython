@@ -13,6 +13,7 @@ import tkinter.ttk as ttk
 import tkinter.font as tkFont
 import tkinter.filedialog as filedialog
 import tkinter.messagebox as messagebox
+import re
 ##########  button function #############
 def start():
     global start_status, arduino_port, com_port, roll, pitch, yaw, count
@@ -293,13 +294,14 @@ def set_port(set):
     ports = list(serial.tools.list_ports.comports())
     if set == 1:
         for p in ports:
+            print(re.findall(r"\((COM\d{1,})\)", p.description)[0])
             if "Arduino" or "USB" or "usb" in p.description:
-                return str(p)[0:4]
+                return re.findall(r"\((COM\d{1,})\)", p.description)[0]
     else:
         ports_list = []
         for p in ports:
             if "COM" in p.description:
-                ports_list.append(str(p)[0:4])
+                ports_list.append(re.findall(r"\((COM\d{1,})\)", p.description)[0])
     return ports_list
 
 ### read from arduino ###
@@ -674,8 +676,10 @@ plane3D_frame.place(anchor='n', relx=0.382, rely=0.15, relwidth=0.295, relheight
 frame_3D = tk.LabelFrame(plane3D_frame)
 frame_3D.place(anchor='n', relx=0.5, rely=0.05, relwidth=0.8, relheight=0.8)
 
+# fig3d = plt.figure(1, figsize=(6, 6))
+# ax = fig3d.gca(projection='3d')
 fig3d = plt.figure(1, figsize=(6, 6))
-ax = fig3d.gca(projection='3d')
+ax = fig3d.add_subplot(111, projection='3d')   # تغییر داده شد
 
 ax.set_xlabel('Roll')
 ax.set_ylabel('Pitch')

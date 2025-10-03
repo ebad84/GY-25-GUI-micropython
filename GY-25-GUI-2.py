@@ -529,12 +529,19 @@ roll, pitch, yaw, mode = 0.0, 0.0, 0.0, 1
 roll_origin, pitch_origin, yaw_origin = 0.0, 0.0, 0.0
 
 ### Slider Value ###
-roll_min_var = -25
-roll_max_var = 35
-pitch_min_var = -25
-pitch_max_var = 35
-yaw_min_var = -25
-yaw_max_var = 35
+# roll_min_var = -25
+# roll_max_var = 35
+# pitch_min_var = -25
+# pitch_max_var = 35
+# yaw_min_var = -25
+# yaw_max_var = 35
+
+roll_min_var = -179
+roll_max_var = 179
+pitch_min_var = -179
+pitch_max_var = 179
+yaw_min_var = -179
+yaw_max_var = 179
 
 ### plot value ###
 roll_array, pitch_array, yaw_array = [], [], []

@@ -19,7 +19,7 @@ class GY25:
             return None
         if buf[0] != 0xAA or buf[7] != 0x55:
             return None
-        print(buf)
+        # print(buf)
         yaw   = struct.unpack(">h", buf[1:3])[0] / 100.0
         pitch = struct.unpack(">h", buf[3:5])[0] / 100.0
         roll  = struct.unpack(">h", buf[5:7])[0] / 100.0
